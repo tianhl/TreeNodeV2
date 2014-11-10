@@ -14,13 +14,15 @@ template<class O>
 class Node{
 	public:
 		Node(){m_ref=0;}
+
 		virtual ~Node() {};
 		// pure virtual func
 		virtual std::string path() = 0;
 		virtual Node<O>* branch(const std::string& name) = 0;
 		virtual Node<O>* root() = 0;
 		virtual Node<O>* parent() = 0;
-		//virtual Node<O>* find(const std::string& name){
+
+		// map
 		Node<O>* find(const std::string& name){
 			if(!name.empty() && _map.find(name) != _map.end()) return _map[name];
 			else return 0;
@@ -32,30 +34,18 @@ class Node{
 			}
 			return false;
 		}
-		// OBJ
 
+		// obj
 		void registObj(O* o){ m_ref = o; }
 		O* getObj(){ 
 			if(m_ref) return m_ref; 
 			else throw std::runtime_error("DynamicObj is not registed.\n");
 		}
 
-		//void print(){
-		//	std::cout << m_path << std::endl;
-
-		//	std::map<std::string, Node<O>*>::iterator it;
-		//	Node<O>* node;
-		//	for(it=m_map.begin();it!=m_map.end();it++){
-		//		ds = dynamic_cast<DataStore*>(it->second.get());
-		//		if(ds) ds->printTree();
-		//		else std::cout << ("/"==m_path)?m_path+it->first:m_path+"/"+it->first << std::endl;
-		//	}
-		//}
 
 	private:
 		O*               m_ref;
-	        typedef std::map<std::string, Node<O>*> NodeMap;
-		NodeMap _map;
+	        std::map<std::string, Node<O>*> _map;
 
 };
 
@@ -64,10 +54,10 @@ class Node{
 template<class O>
 class DynamicTree: public Node<O>{
 	public:
+		// sington in one datamgr
 		DynamicTree(){ m_parent = 0; m_path   = "/"; m_root   = this; }
 
 		// Branch
-
 		Node<O>* find(const std::string& name){
 			vector<std::string> dividedName;
 			vector<std::string>::iterator itName;
@@ -91,7 +81,6 @@ class DynamicTree: public Node<O>{
 			// if error delete br!
 			return br;
 		}
-
 
 		// tree
 		std::string     path(){return m_path;}
