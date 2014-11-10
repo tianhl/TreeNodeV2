@@ -22,8 +22,8 @@ class Node{
 		virtual Node<O>* parent() = 0;
 		virtual void registObj(O* o) = 0;
 		virtual O* getObj() = 0;
-		//virtual func
-		virtual Node<O>* find(const std::string& name){
+		//virtual Node<O>* find(const std::string& name){
+		Node<O>* find(const std::string& name){
 			if(!name.empty() && _map.find(name) != _map.end()) return _map[name];
 			else return 0;
 		}
@@ -50,15 +50,17 @@ class DynamicTree: public Node<O>{
 
                 // Branch
 
-		virtual Node<O>* find(const std::string& name){
+		Node<O>* find(const std::string& name){
 			vector<std::string> dividedName;
 			vector<std::string>::iterator itName;
 			boost::split(dividedName, name, boost::is_any_of("/"), boost::token_compress_on);
 			Node<O>* current = (0==name.find("/"))?m_root:this;
 			for(itName=dividedName.begin(); itName!=dividedName.end(); itName++){
 				if(0==(*itName).size()) continue;
-				if(dynamic_cast<DynamicTree<O>*>(current)) current = current->Node<O>::find(*itName);
-			        else current = current->find(*itName);	
+				current = current->find(*itName);
+				//current = current->Node<O>::find(*itName);
+				//if(dynamic_cast<DynamicTree<O>*>(current)) current = current->Node<O>::find(*itName);
+			        //else current = current->find(*itName);	
 				// how to throw out error? path
 			}
 			return current;
