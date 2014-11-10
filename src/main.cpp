@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 	// tree
 	DataStore* datastore = new DataStore();
 	std::cout << "root datastore: " << datastore->path() << std::endl;
-	std::cout << datastore->find("/")<< std::endl;
+	std::cout << "/  " << datastore->find("/") << " datastore " << datastore << std::endl;
 	std::cout << "new branch " << datastore->branch("pulse") << std::endl;
 	std::cout << datastore->find("/pulse")->path() << std::endl;
 	datastore->find("/pulse")->branch("event");
