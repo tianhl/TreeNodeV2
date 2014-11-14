@@ -33,19 +33,15 @@ int main(int argc, char *argv[]) {
 	datastore->find("/pulse")->registObj(new Pulse());
 	DataObject* data = datastore->find("/pulse")->getObj();
 	std::cout << "obj: " << data  << " type "<<  typeid(data).name() << std::endl;
-	Pulse* data2= datastore->getObj<Pulse*>("/pulse");
-	std::cout << "obj: " << data2  << " type "<<  typeid(data2).name() << std::endl;
 	dynamic_cast<Pulse*>(data);
 
 	// leaf event
 	std::cout << "====================== Event" << std::endl;
 	Event* evt = new Event();
 	std::cout << "new event: " << evt << std::endl;
-	datastore->find("/pulse/event")->registObj(evt);
-	//DataObject* event = datastore->find("/pulse/event")->getObj();
+	datastore->registObj("/pulse/event", evt);
 	Event* event = datastore->getObj<Event*>("/pulse/event");
-	std::cout << "get event: "  << event << std::endl;
-	dynamic_cast<Event*>(event);
+	std::cout << "get event: "  << event << " type "<<  typeid(event).name() << std::endl;
 
 
 	return 1;
