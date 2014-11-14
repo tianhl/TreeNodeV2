@@ -12,15 +12,15 @@
 
 //=======================================================================
 template<class O>
-class Node{
+class DynamicNode{
 	public:
-		Node(){m_ref=0;}
+		DynamicNode(){m_ref=0;}
 
-		virtual ~Node() {};
+		virtual ~DynamicNode() {};
 
 		// map
-		Node<O>* find(const std::string& name);
-		bool regist(const std::string& name, Node<O>* node);
+		DynamicNode<O>* find(const std::string& name);
+		bool regist(const std::string& name, DynamicNode<O>* node);
 
 		// obj
 		bool registObj(O* o); 
@@ -28,13 +28,13 @@ class Node{
 
 	private:
 		O*               m_ref;
-	        std::map<std::string, Node<O>*> _map;
+	        std::map<std::string, DynamicNode<O>*> _map;
 
 };
 
 //=======================================================================
 template<class O>
-class DynamicTree: public Node<O>{
+class DynamicTree: public DynamicNode<O>{
 	public:
 		// sington in one datamgr
 		DynamicTree(){ m_parent = 0; m_path   = "/"; m_root   = this; }
@@ -48,11 +48,11 @@ class DynamicTree: public Node<O>{
 		template<class C>
 			C getObj(std::string path){return dynamic_cast<C>(find(path)->getObj());}
 		// ????
-		O* getObj(){return Node<O>::getObj();}; 
+		O* getObj(){return DynamicNode<O>::getObj();}; 
 
 		bool registObj(std::string path, O* o){return find(path)->registObj(o);}
 		// ????
-		bool registObj(O* o){return Node<O>::registObj(o);}
+		bool registObj(O* o){return DynamicNode<O>::registObj(o);}
 
 		// tree
 		std::string     path(){return m_path;}
@@ -70,22 +70,22 @@ class DynamicTree: public Node<O>{
 
 //=======================================================================
 template<class O>
-Node<O>* Node<O>::find(const std::string& name){
+DynamicNode<O>* DynamicNode<O>::find(const std::string& name){
 	if(!name.empty() && _map.find(name) != _map.end()) return _map[name];
 	else return NULL;
 };
 
 template<class O>
-bool Node<O>::regist(const std::string& name, Node<O>* node){
+bool DynamicNode<O>::regist(const std::string& name, DynamicNode<O>* node){
 	if(!name.empty() && _map.find(name) == _map.end()){
-		_map.insert(std::pair<std::string, Node<O>*>(name, node));
+		_map.insert(std::pair<std::string, DynamicNode<O>*>(name, node));
 		return true;
 	}
 	return false;
 };
 
 template<class O>
-bool Node<O>::registObj(O* o){ 
+bool DynamicNode<O>::registObj(O* o){ 
 	if(m_ref) {
 		std::cout << "Object has been registed!" << std::endl;
 		return false;
@@ -97,7 +97,7 @@ bool Node<O>::registObj(O* o){
 };
 
 template<class O>
-O* Node<O>::getObj(){ 
+O* DynamicNode<O>::getObj(){ 
 	if(m_ref) return m_ref; 
 	else throw std::runtime_error("Object is not registed.\n");
 };
@@ -108,7 +108,7 @@ DynamicTree<O>* DynamicTree<O>::find(const std::string& name){
 	vector<std::string> dividedName;
 	vector<std::string>::iterator itName;
 	boost::split(dividedName, name, boost::is_any_of("/"), boost::token_compress_on);
-	Node<O>* current = (0==name.find("/"))?m_root:this;
+	DynamicNode<O>* current = (0==name.find("/"))?m_root:this;
 	for(itName=dividedName.begin(); itName!=dividedName.end(); itName++){
 		if(0==(*itName).size()) continue;
 		current = current->find(*itName);

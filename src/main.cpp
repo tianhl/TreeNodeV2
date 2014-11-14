@@ -45,8 +45,10 @@ int main(int argc, char *argv[]) {
 	std::cout << "get event: "  << event << " type "<<  typeid(event).name() << std::endl;
 
 	DataStore* pulsedir = datastore->find("/pulse");
-	pulsedir->getObj<Event*>("event");
-	std::cout << "form /pulse direction get event: "  << event << " type "<<  typeid(event).name() << std::endl;
+	Event* event1 = pulsedir->getObj<Event*>("event");
+	DataObject* event2 = pulsedir->find("event")->getObj();
+	std::cout << "form /pulse direction get event: "  << event1 << " type "<<  typeid(event1).name() 
+		<< " " << event2 << " type " << typeid(event2).name() << std::endl;
 
 	return 1;
 }
