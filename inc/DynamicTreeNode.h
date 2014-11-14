@@ -17,18 +17,13 @@ class Node{
 		Node(){m_ref=0;}
 
 		virtual ~Node() {};
-		// pure virtual func for tree
-		virtual std::string path() = 0;
-		virtual Node<O>* branch(const std::string& name) = 0;
-		virtual Node<O>* root() = 0;
-		virtual Node<O>* parent() = 0;
 
 		// map
 		Node<O>* find(const std::string& name);
 		bool regist(const std::string& name, Node<O>* node);
 
 		// obj
-		void registObj(O* o); 
+		bool registObj(O* o); 
 		O* getObj(); 
 
 	private:
@@ -44,39 +39,33 @@ class DynamicTree: public Node<O>{
 		// sington in one datamgr
 		DynamicTree(){ m_parent = 0; m_path   = "/"; m_root   = this; }
 
-		// Branch
-		Node<O>* find(const std::string& name);
+		// Branch 
+		DynamicTree<O>* find(const std::string& name);
 
-		//virtual DynamicTree<O>* branch(const std::string& name);
-		//// ??????
-		virtual DynamicTree<O>* branch(const std::string& name){
-			if(name.empty()) throw std::runtime_error("make branch error: no name for branch");
-			DynamicTree<O>* br = new DynamicTree<O>(name, this);
-			if(not this->regist(name, br)){
-				delete br;
-				return NULL;
-			}
-			return br;
-		}
+		DynamicTree<O>* branch(const std::string& name);
 
-		// why? obj
+		// obj
 		template<class C>
 			C getObj(std::string path){return dynamic_cast<C>(find(path)->getObj());}
+		// ????
+		O* getObj(){return Node<O>::getObj();}; 
 
-		void registObj(std::string path, O* o){find(path)->registObj(o);}
+		bool registObj(std::string path, O* o){return find(path)->registObj(o);}
+		// ????
+		bool registObj(O* o){return Node<O>::registObj(o);}
 
 		// tree
 		std::string     path(){return m_path;}
-		Node<O>*        root(){return m_root;}
-		Node<O>*        parent(){return m_parent;}
+		DynamicTree<O>* root(){return m_root;}
+		DynamicTree<O>* parent(){return m_parent;}
 
 	private:
 		DynamicTree(std::string name, DynamicTree<O>* parent);
 
 	private:
 		std::string      m_path;
-		Node<O>*         m_root;
-		Node<O>*         m_parent;
+		DynamicTree<O>*  m_root;
+		DynamicTree<O>*  m_parent;
 };
 
 //=======================================================================
@@ -96,9 +85,15 @@ bool Node<O>::regist(const std::string& name, Node<O>* node){
 };
 
 template<class O>
-void Node<O>::registObj(O* o){ 
-	if(m_ref) std::cout << "Object has been registed!" << std::endl;
-	else m_ref = o; 
+bool Node<O>::registObj(O* o){ 
+	if(m_ref) {
+		std::cout << "Object has been registed!" << std::endl;
+		return false;
+	}
+	else {
+		m_ref = o; 
+		return true;
+	}
 };
 
 template<class O>
@@ -109,7 +104,7 @@ O* Node<O>::getObj(){
 
 //=======================================================================
 template<class O>
-Node<O>* DynamicTree<O>::find(const std::string& name){
+DynamicTree<O>* DynamicTree<O>::find(const std::string& name){
 	vector<std::string> dividedName;
 	vector<std::string>::iterator itName;
 	boost::split(dividedName, name, boost::is_any_of("/"), boost::token_compress_on);
@@ -119,7 +114,18 @@ Node<O>* DynamicTree<O>::find(const std::string& name){
 		current = current->find(*itName);
 		if(not current )return NULL;
 	}
-	return current;
+	return dynamic_cast<DynamicTree<O>*>(current);
+};
+
+template<class O>
+DynamicTree<O>* DynamicTree<O>::branch(const std::string& name){
+	if(name.empty()) throw std::runtime_error("make branch error: no name for branch");
+	DynamicTree<O>* br = new DynamicTree<O>(name, this);
+	if(not this->regist(name, br)){
+		delete br;
+		return NULL;
+	}
+	return br;
 };
 
 template<class O>

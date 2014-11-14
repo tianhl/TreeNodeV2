@@ -32,8 +32,9 @@ int main(int argc, char *argv[]) {
 	std::cout << "====================== Pulse" << std::endl;
 	datastore->find("/pulse")->registObj(new Pulse());
 	DataObject* data = datastore->find("/pulse")->getObj();
+	Pulse* pulse = dynamic_cast<Pulse*>(data);
 	std::cout << "obj: " << data  << " type "<<  typeid(data).name() << std::endl;
-	dynamic_cast<Pulse*>(data);
+	std::cout << "pls: " << pulse << " type "<<  typeid(pulse).name() << std::endl;
 
 	// leaf event
 	std::cout << "====================== Event" << std::endl;
@@ -43,6 +44,9 @@ int main(int argc, char *argv[]) {
 	Event* event = datastore->getObj<Event*>("/pulse/event");
 	std::cout << "get event: "  << event << " type "<<  typeid(event).name() << std::endl;
 
+	DataStore* pulsedir = datastore->find("/pulse");
+	pulsedir->getObj<Event*>("event");
+	std::cout << "form /pulse direction get event: "  << event << " type "<<  typeid(event).name() << std::endl;
 
 	return 1;
 }
