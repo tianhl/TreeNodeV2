@@ -16,7 +16,7 @@ class Node{
 		Node(){m_ref=0;}
 
 		virtual ~Node() {};
-		// pure virtual func
+		// pure virtual func for tree
 		virtual std::string path() = 0;
 		virtual Node<O>* branch(const std::string& name) = 0;
 		virtual Node<O>* root() = 0;
@@ -25,7 +25,7 @@ class Node{
 		// map
 		Node<O>* find(const std::string& name){
 			if(!name.empty() && _map.find(name) != _map.end()) return _map[name];
-			else return 0;
+			else return NULL;
 		}
 		bool regist(const std::string& name, Node<O>* node){
 			if(!name.empty() && _map.find(name) == _map.end()){
@@ -41,6 +41,8 @@ class Node{
 			if(m_ref) return m_ref; 
 			else throw std::runtime_error("DynamicObj is not registed.\n");
 		}
+		//template<class C>
+		//C* getObj1(std::string path){return dynamic_cast<C*>(find(path)->getObj());}
 
 
 	private:
@@ -66,19 +68,21 @@ class DynamicTree: public Node<O>{
 			for(itName=dividedName.begin(); itName!=dividedName.end(); itName++){
 				if(0==(*itName).size()) continue;
 				current = current->find(*itName);
-				//current = current->Node<O>::find(*itName);
-				//if(dynamic_cast<DynamicTree<O>*>(current)) current = current->Node<O>::find(*itName);
-				//else current = current->find(*itName);	
-				// how to throw out error? path
+				if(not current )return NULL;
 			}
 			return current;
 		}
 
-		virtual Node<O>* branch(const std::string& name){
+		//template<class C>
+		//C* getObj(std::string path){return dynamic_cast<C*>(find(path)->getObj());}
+
+		virtual DynamicTree<O>* branch(const std::string& name){
 			if(name.empty()) throw std::runtime_error("make branch error: no name for branch");
 			DynamicTree<O>* br = new DynamicTree<O>(name, this);
-			this->regist(name, br);
-			// if error delete br!
+			if(not this->regist(name, br)){
+				delete br;
+				return NULL;
+			}
 			return br;
 		}
 
