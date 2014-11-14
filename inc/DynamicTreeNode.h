@@ -41,8 +41,9 @@ class Node{
 			if(m_ref) return m_ref; 
 			else throw std::runtime_error("DynamicObj is not registed.\n");
 		}
+
 		//template<class C>
-		//C* getObj1(std::string path){return dynamic_cast<C*>(find(path)->getObj());}
+		//C* getObj(std::string path){return dynamic_cast<C*>(find(path)->getObj());}
 
 
 	private:
@@ -73,8 +74,9 @@ class DynamicTree: public Node<O>{
 			return current;
 		}
 
-		//template<class C>
-		//C* getObj(std::string path){return dynamic_cast<C*>(find(path)->getObj());}
+		// why?
+		template<class C>
+		C getObj(std::string path){return dynamic_cast<C>(find(path)->getObj());}
 
 		virtual DynamicTree<O>* branch(const std::string& name){
 			if(name.empty()) throw std::runtime_error("make branch error: no name for branch");
